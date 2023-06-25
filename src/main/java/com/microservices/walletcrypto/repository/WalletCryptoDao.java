@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface WalletCryptoDao extends CrudRepository<WalletCrypto, Long> {
-    List<WalletCrypto> findByUserId(Long userId);
+    List<WalletCrypto> findAllByUserId(Long userId);
     Optional<WalletCryptoDto> findByUserIdAndSymbol(Long userId, String symbol);
 }

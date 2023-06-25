@@ -2,8 +2,6 @@ package com.microservices.walletcrypto.mapper;
 
 import com.microservices.walletcrypto.dto.WalletCryptoDto;
 import com.microservices.walletcrypto.entity.WalletCrypto;
-import com.microservices.walletcrypto.repository.WalletCryptoDao;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
