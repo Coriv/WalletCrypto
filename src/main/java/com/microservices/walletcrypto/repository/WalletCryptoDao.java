@@ -14,4 +14,5 @@ import java.util.Optional;
 public interface WalletCryptoDao extends CrudRepository<WalletCrypto, Long> {
     List<WalletCrypto> findAllByUserId(Long userId);
     Optional<WalletCrypto> findByUserIdAndSymbol(Long userId, String symbol);
+    void deleteByUserId(Long userId);
 }

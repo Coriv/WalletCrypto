@@ -157,6 +157,7 @@ public class ServiceTestSuite {
         when(repository.findAllByUserId(userId)).thenReturn(List.of(walletCrypto, walletCrypto2));
         //when & then
         assertThrows(FundsOnTheWalletException.class, () -> service.deleteWalletsForUser(userId));
+        verify(repository, times(0)).deleteByUserId(userId);
     }
 
     @Test
@@ -176,6 +177,7 @@ public class ServiceTestSuite {
         when(repository.findAllByUserId(userId)).thenReturn(List.of(walletCrypto, walletCrypto2));
         //when & then
         assertDoesNotThrow(() -> service.deleteWalletsForUser(userId));
+        verify(repository,times(1)).deleteById(userId);
     }
 
 }
