@@ -3,6 +3,7 @@ package com.microservices.walletcrypto.service;
 import com.microservices.walletcrypto.dto.CreateTradeDto;
 import com.microservices.walletcrypto.dto.TransactionDto;
 import com.microservices.walletcrypto.entity.WalletCrypto;
+import com.microservices.walletcrypto.exception.FundsOnTheWalletException;
 import com.microservices.walletcrypto.exception.NotEnoughFoundsException;
 import com.microservices.walletcrypto.exception.WalletCryptoNotFoundException;
 import com.microservices.walletcrypto.feign.CryptocurrencyClient;
@@ -62,4 +63,20 @@ public class WalletCryptoService {
         walletCrypto.setQuantity(walletCrypto.getQuantity().subtract(quantity));
         walletCryptoDao.save(walletCrypto);
     }
-}
+
+    public void deleteWalletsForUser(Long userId) throws FundsOnTheWalletException {
+        areThereFundsInTheAccount(userId);
+        walletCryptoDao.deleteById(userId);
+    }
+
+    private void areThereFundsInTheAccount(Long userId) throws FundsOnTheWalletException {
+        boolean walletsAreNotEmpty = walletCryptoDao.findAllByUserId(userId).stream()
+                .anyMatch(this::checkQuantityNotEqualsToZero);
+        if(walletsAreNotEmpty) {
+            throw new FundsOnTheWalletException();
+        }
+    }
+    private boolean checkQuantityNotEqualsToZero(WalletCrypto wallet) {
+        return !wallet.getQuantity().equals(BigDecimal.ZERO);
+    }
+ }

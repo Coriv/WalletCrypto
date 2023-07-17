@@ -3,6 +3,7 @@ package com.microservices.walletcrypto.controller;
 import com.microservices.walletcrypto.dto.CreateTradeDto;
 import com.microservices.walletcrypto.dto.TransactionDto;
 import com.microservices.walletcrypto.dto.WalletCryptoDto;
+import com.microservices.walletcrypto.exception.FundsOnTheWalletException;
 import com.microservices.walletcrypto.exception.NotEnoughFoundsException;
 import com.microservices.walletcrypto.exception.WalletCryptoNotFoundException;
 import com.microservices.walletcrypto.mapper.WalletCryptoMapper;
@@ -45,6 +46,12 @@ public class WalletCryptoController {
     @PutMapping("/check-trade")
     public ResponseEntity<Void> updateWalletScoreToTrade(@RequestBody CreateTradeDto createTradeDto) throws WalletCryptoNotFoundException, NotEnoughFoundsException {
         walletCryptoService.validateTradeAndUpdateWallet(createTradeDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<Void> deleteWalletCrypto(@RequestParam Long userId) throws FundsOnTheWalletException {
+        walletCryptoService.deleteWalletsForUser(userId);
         return ResponseEntity.ok().build();
     }
 }

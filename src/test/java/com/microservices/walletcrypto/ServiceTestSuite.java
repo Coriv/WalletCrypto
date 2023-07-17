@@ -3,6 +3,7 @@ package com.microservices.walletcrypto;
 import com.microservices.walletcrypto.dto.CreateTradeDto;
 import com.microservices.walletcrypto.dto.TransactionDto;
 import com.microservices.walletcrypto.entity.WalletCrypto;
+import com.microservices.walletcrypto.exception.FundsOnTheWalletException;
 import com.microservices.walletcrypto.exception.NotEnoughFoundsException;
 import com.microservices.walletcrypto.exception.WalletCryptoNotFoundException;
 import com.microservices.walletcrypto.feign.CryptocurrencyClient;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -19,8 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -137,6 +138,44 @@ public class ServiceTestSuite {
         walletCrypto.setQuantity(currentQuantity);
         // when, then
         assertThrows(NotEnoughFoundsException.class, () -> service.validateTransaction(walletCrypto, transactionQuantity));
+    }
+
+    @Test
+    public void throwWhenWalletsAreNotEmptyTest() {
+        //give
+        var userId = 3L;
+        WalletCrypto walletCrypto = new WalletCrypto();
+        walletCrypto.setId(1L);
+        walletCrypto.setUserId(userId);
+        walletCrypto.setQuantity(BigDecimal.TEN);
+
+        WalletCrypto walletCrypto2 = new WalletCrypto();
+        walletCrypto2.setId(2L);
+        walletCrypto2.setUserId(userId);
+        walletCrypto2.setQuantity(BigDecimal.ZERO);
+
+        when(repository.findAllByUserId(userId)).thenReturn(List.of(walletCrypto, walletCrypto2));
+        //when & then
+        assertThrows(FundsOnTheWalletException.class, () -> service.deleteWalletsForUser(userId));
+    }
+
+    @Test
+    public void doNotThrowWhenWalletAreEmptyTest() {
+        //give
+        var userId = 3L;
+        WalletCrypto walletCrypto = new WalletCrypto();
+        walletCrypto.setId(1L);
+        walletCrypto.setUserId(userId);
+        walletCrypto.setQuantity(BigDecimal.ZERO);
+
+        WalletCrypto walletCrypto2 = new WalletCrypto();
+        walletCrypto2.setId(2L);
+        walletCrypto2.setUserId(userId);
+        walletCrypto2.setQuantity(BigDecimal.ZERO);
+
+        when(repository.findAllByUserId(userId)).thenReturn(List.of(walletCrypto, walletCrypto2));
+        //when & then
+        assertDoesNotThrow(() -> service.deleteWalletsForUser(userId));
     }
 
 }
