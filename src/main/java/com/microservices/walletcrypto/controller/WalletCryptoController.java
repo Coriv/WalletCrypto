@@ -29,8 +29,8 @@ public class WalletCryptoController {
         return ResponseEntity.ok(listDto);
     }
 
-    @PostMapping("/createCryptoWallets")
-    public ResponseEntity<Void> createCryptoWalletsForUser(@RequestParam("userId") Long userId) {
+    @PostMapping("/createCryptoWallets/{userId}")
+    public ResponseEntity<Void> createCryptoWalletsForUser(@PathVariable Long userId) {
         walletCryptoService.createWalletsForUser(userId);
         return ResponseEntity.ok().build();
     }
